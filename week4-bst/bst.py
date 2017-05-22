@@ -1,3 +1,4 @@
+import pytest
 
 
 class Node:
@@ -41,6 +42,15 @@ class Node:
         if self.right:
             for key in self.right:
                 yield key
+
+    def __getitem__(self, key):
+        if self.key == key:
+            return self.value
+        if key > self.key and self.right:
+            return self.right[key]
+        if key < self.key and self.left:
+            return self.left[key]
+        raise KeyError
 
 
 class BinarySearchTree:
@@ -139,11 +149,23 @@ class BinarySearchTree:
             return self._root.__iter__()
         return [].__iter__()
 
+    def __getitem__(self, key):
+        if self._root:
+            return self._root[key]
+        raise KeyError
+
 
 def test_add_value_and_get_it():
     tree = BinarySearchTree()
     tree.put('a', 1)
     assert tree.get('a') == 1
+    assert tree['a'] == 1
+
+def test_get_nonexistent_key():
+    tree = BinarySearchTree()
+    assert tree.get('a') is None
+    with pytest.raises(KeyError):
+        tree['a']
 
 
 def test_overwrite_value():
@@ -151,6 +173,7 @@ def test_overwrite_value():
     tree.put('a', 1)
     tree.put('a', 2)
     assert tree.get('a') == 2
+    assert tree['a'] == 2
 
 
 def test_put_get_min_and_max():
@@ -274,3 +297,4 @@ def test_iter_yields_keys_in_sorted_order():
     tree.put('a', 1)
     tree.put('k', 1)
     assert list(tree) == ['a', 'c', 'd', 'f', 'k']
+
