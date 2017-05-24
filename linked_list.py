@@ -34,6 +34,21 @@ class Node:
         node.next = node.next.next
         return deleted
 
+    def has_loop(self):
+        slow = fast = self
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if slow and slow == fast:
+                break
+        else:
+            return None
+        slow = self
+        while slow != fast:
+            slow = slow.next
+            fast = fast.next
+        return slow
+
 
 
 class LinkedList:
@@ -85,6 +100,7 @@ class LinkedList:
             self._root = self._root.next
         else:
             deleted = self._root.pop(index)
+        self._length -= 1
         return deleted.value
 
 
@@ -147,3 +163,56 @@ def test_delete_element_in_the_middle(three_elem_llist):
 def test_delete_last_element(three_elem_llist):
     assert three_elem_llist.pop(2) == 'baz'
     assert list(three_elem_llist) == ['foo', 'bar']
+
+
+def test_delete_and_insert_element(three_elem_llist):
+    three_elem_llist.pop(2)
+    three_elem_llist.append('hello')
+    assert list(three_elem_llist) == ['foo', 'bar', 'hello']
+
+
+def test_find_circular_link_if_node_points_to_itself():
+    node = Node('a')
+    node.next = node
+    assert node.has_loop().value == 'a'
+
+
+def test_no_circular_link_in_a_single_node():
+    node = Node('b')
+    assert node.has_loop() is None
+
+
+def test_two_node_circle():
+    """
+    a-b=c
+    """
+    head = Node('a')
+    head.next = Node('b')
+    head.next.next = Node('c')
+    head.next.next.next = head.next
+    assert head.has_loop().value == 'b'
+
+
+def test_three_node_circle():
+    """
+   a-b-c-d
+       \ /
+        e
+    """
+    head = Node('a')
+    head.next = Node('b')
+    head.next.next = Node('c')
+    head.next.next.next = Node('d')
+    head.next.next.next.next = Node('e')
+    head.next.next.next.next.next = head.next.next
+    assert head.has_loop().value == 'c'
+
+
+def test_negative_case():
+    """
+    a-b-c-None
+    """
+    head = Node('a')
+    head.next = Node('b')
+    head.next.next = Node('c')
+    assert head.has_loop() is None
