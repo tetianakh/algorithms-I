@@ -27,10 +27,14 @@ class MaxHeap:
 
         while 2*k <= N:
             j = 2*k
+            # figure out which of the children is larger
             if (j < N) and self._less(j, j+1):
                 j += 1
+            # if the elem at k is larger than or equal to its largest child,
+            # we're done
             if not self._less(k, j):
                 break
+            # if elem is smaller than it's largest child, promote the child
             self._exchange(k, j)
             k = j
 
