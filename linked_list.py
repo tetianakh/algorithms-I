@@ -103,6 +103,16 @@ class LinkedList:
         self._length -= 1
         return deleted.value
 
+    def reverse(self):
+        previous = None
+        current = self._root
+        while current:
+            tmp = current.next
+            current.next = previous
+            previous = current
+            current = tmp
+        self._root = previous
+
 
 @pytest.fixture
 def llist():
@@ -216,3 +226,11 @@ def test_negative_case():
     head.next = Node('b')
     head.next.next = Node('c')
     assert head.has_loop() is None
+
+
+def test_reverse_llist(llist):
+    llist.append('hello')
+    llist.append('world')
+    llist.append('!')
+    llist.reverse()
+    assert list(llist) == ['!', 'world', 'hello']
